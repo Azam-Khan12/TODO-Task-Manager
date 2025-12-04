@@ -19,31 +19,41 @@
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <header class="header">
             <h1 class="logo">FuturoTODO</h1>
             <p class="subtitle">Elevate Your Productivity</p>
         </header>
         
-        <main class="main">
+        <!-- To Do List Section -->
+        <section class="todo-section">
+            <div class="section-header">
+                <h2>To Do List <span class="date">Today</span></h2>
+                <div class="search-icon">🔍</div>
+            </div>
             <div class="input-section glass-card">
-                <input type="text" id="taskInput" placeholder="Add a new task... (e.g., Conquer the day)" class="task-input">
-                <button id="addBtn" class="add-btn">Add Task</button>
+                <input type="text" id="taskInput" placeholder="Add a new task... (e.g., Dashboard project)" class="task-input">
+                <button id="addBtn" class="add-btn">+</button>
             </div>
-            
-            <div class="tasks-section">
-                <div class="tasks-header glass-card">
-                    <h2>Your Tasks</h2>
-                    <span id="taskCount">0</span>
-                </div>
-                <ul id="taskList" class="task-list"></ul>
-            </div>
-        </main>
+            <ul id="taskList" class="task-list"></ul>
+        </section>
         
-        <div class="floating-elements">
-            <div class="float-orb orb1"></div>
-            <div class="float-orb orb2"></div>
-            <div class="float-orb orb3"></div>
-        </div>
+        <!-- Past Activity Section -->
+        <section class="past-section">
+            <div class="section-header">
+                <h2>Past Activity</h2>
+            </div>
+            <ul id="pastList" class="past-list"></ul>
+        </section>
+        
+        <!-- Bottom Nav -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active">🏠</button>
+            <button class="nav-btn">❤️</button>
+            <button class="nav-btn add-nav">+</button>
+            <button class="nav-btn">🔔</button>
+            <button class="nav-btn">👤</button>
+        </nav>
     </div>
     
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

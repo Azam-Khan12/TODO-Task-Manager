@@ -1,17 +1,26 @@
-// Modern JS for TODO Interactions - Smooth Animations, API Calls + Offline Support + Mobile Fixes + Stack UI
+// Full JS - Bug Fixes (Add/Toggle/Delete Working), Counter Fixed, Past Section Demo
 document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('taskInput');
     const addBtn = document.getElementById('addBtn');
     const taskList = document.getElementById('taskList');
-    const taskCount = document.getElementById('taskCount');
+    const pastList = document.getElementById('pastList');
+    const taskCount = document.createElement('div');
+    taskCount.id = 'taskCount';
+    document.querySelector('.section-header').appendChild(taskCount); // Add counter to header
 
-    // Load initial tasks
+    // Demo past activities (like screenshot)
+    const demoPast = [
+        { task: 'Stikom Library Project', date: '5 Mon', status: 'missed', icon: '📚' },
+        { task: 'Design Thinking Workshop', date: '5 Mon', status: 'success', icon: '💡' }
+    ];
+    renderPast(demoPast);
+
+    // Load tasks
     loadTasks();
 
     // Add task
-    addBtn.addEventListener('click', () => addTask());
+    addBtn.addEventListener('click', addTask);
     taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
-    // Mobile touch support for add button
     addBtn.addEventListener('touchstart', (e) => { e.preventDefault(); addTask(); });
 
     async function addTask() {
@@ -19,18 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!task) return;
         let tasks;
         if (navigator.onLine) {
-            // Online: Use API
-            const response = await fetch('/tasks', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ action: 'add', task }) 
-            });
+            const response = await fetch('/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add', task }) });
             const data = await response.json();
             tasks = data.tasks;
-            // Sync localStorage
             localStorage.setItem('tasks', JSON.stringify(tasks));
         } else {
-            // Offline: Local Storage
             tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
             const date = new Date().toISOString().split('T')[0];
             tasks.push({task, date, completed: false});
@@ -38,27 +40,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         renderTasks(tasks);
         taskInput.value = '';
-        // Stack animation trigger on new task
-        if (taskList.lastElementChild) {
-            taskList.lastElementChild.classList.add('stack-slide');
-            setTimeout(() => taskList.lastElementChild.classList.remove('stack-slide'), 400);
+        // Stack animation
+        const newItem = taskList.lastElementChild;
+        if (newItem) {
+            newItem.classList.add('stack-slide');
+            setTimeout(() => newItem.classList.remove('stack-slide'), 400);
         }
-        // Micro-interaction on button
-        addBtn.style.transform = 'scale(0.95)'; 
+        // Micro-interaction
+        addBtn.style.transform = 'scale(0.95)';
         setTimeout(() => addBtn.style.transform = '', 150);
     }
 
-    // Load tasks
     async function loadTasks() {
         if (navigator.onLine) {
             try {
                 const response = await fetch('/tasks');
                 const data = await response.json();
-                // Sync localStorage with server
                 localStorage.setItem('tasks', JSON.stringify(data.tasks));
                 renderTasks(data.tasks);
             } catch (e) {
-                // Fallback to local
                 loadFromLocal();
             }
         } else {
@@ -71,15 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTasks(tasks);
     }
 
-    // Render tasks with animations
+    // Render current tasks
     function renderTasks(tasks) {
         taskList.innerHTML = '';
         tasks.forEach((t, index) => {
             const li = document.createElement('li');
             li.className = `task-item ${t.completed ? 'completed' : ''}`;
             li.style.setProperty('--order', index);
+            const icon = getIcon(t.task); // Auto icon
             li.innerHTML = `
-                <div>
+                <span class="icon">${icon}</span>
+                <div class="task-content">
                     <span class="task-text">${t.task}</span>
                     <span class="task-date">${t.date}</span>
                 </div>
@@ -90,28 +92,44 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             taskList.appendChild(li);
         });
-        // Parallax on scroll
-        let scrollHandler = () => {
-            document.querySelectorAll('.float-orb').forEach(orb => {
-                const speed = orb.classList.contains('orb1') ? 0.5 : orb.classList.contains('orb2') ? 0.3 : 0.7;
-                orb.style.transform = `translateY(${window.scrollY * speed}px)`;
-            });
-        };
-        window.removeEventListener('scroll', scrollHandler); // Avoid duplicates
-        window.addEventListener('scroll', scrollHandler);
-        // Update enhanced counter
         updateCounter(tasks);
     }
 
-    // Enhanced Counter: Pending / Total Completed
+    // Render past (demo)
+    function renderPast(past) {
+        pastList.innerHTML = '';
+        past.forEach(p => {
+            const li = document.createElement('li');
+            li.className = 'past-item';
+            li.innerHTML = `
+                <span class="icon">${p.icon}</span>
+                <div class="task-content">
+                    <span class="task-text">${p.task}</span>
+                    <span class="task-date">${p.date}</span>
+                </div>
+                <span class="status ${p.status}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
+            `;
+            pastList.appendChild(li);
+        });
+    }
+
+    // Auto icon based on task
+    function getIcon(task) {
+        if (task.toLowerCase().includes('project') || task.toLowerCase().includes('school')) return '📋';
+        if (task.toLowerCase().includes('meeting') || task.toLowerCase().includes('sir')) return '👤';
+        if (task.toLowerCase().includes('bank') || task.toLowerCase().includes('office')) return '🏦';
+        return '📝';
+    }
+
+    // Fixed Counter - No Glitch
     function updateCounter(tasks) {
         const total = tasks.length;
         const completed = tasks.filter(t => t.completed).length;
         const pending = total - completed;
-        taskCount.innerHTML = `<span class="pending">${pending}</span> / ${total} <span class="completed">${completed}</span>`;
+        taskCount.innerHTML = `<span class="pending">${pending}</span> / <span class="completed">${completed}</span>`;
     }
 
-    // Toggle/Delete with event delegation (better for dynamic list, mobile touch)
+    // Event delegation for toggle/delete (fixed for dynamic list)
     taskList.addEventListener('click', async (e) => {
         const btn = e.target.closest('.complete-btn, .delete-btn');
         if (!btn) return;
@@ -123,9 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Mobile touch support for buttons
     taskList.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Prevent scroll on touch
+        e.preventDefault();
         const btn = e.target.closest('.complete-btn, .delete-btn');
         if (!btn) return;
         const index = parseInt(btn.dataset.index);
@@ -136,41 +153,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Toggle complete (online/offline)
-    window.toggleTask = async (index) => {
+    async function toggleTask(index) {
         let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
         if (0 <= index < tasks.length) {
             tasks[index].completed = !tasks[index].completed;
             localStorage.setItem('tasks', JSON.stringify(tasks));
             if (navigator.onLine) {
-                await fetch('/tasks', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ action: 'complete', index }) 
-                });
+                await fetch('/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'complete', index }) });
             }
             renderTasks(tasks);
         }
-    };
+    }
 
-    // Delete task (online/offline)
-    window.deleteTask = async (index) => {
+    async function deleteTask(index) {
         let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
         if (0 <= index < tasks.length) {
             tasks.splice(index, 1);
             localStorage.setItem('tasks', JSON.stringify(tasks));
             if (navigator.onLine) {
-                await fetch('/tasks', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ action: 'delete', index }) 
-                });
+                await fetch('/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', index }) });
             }
             renderTasks(tasks);
         }
-    };
+    }
 
-    // Online/offline sync events
+    // Parallax & Sync
+    window.addEventListener('scroll', () => {
+        document.querySelectorAll('.float-orb').forEach(orb => {
+            const speed = orb.classList.contains('orb1') ? 0.5 : orb.classList.contains('orb2') ? 0.3 : 0.7;
+            orb.style.transform = `translateY(${window.scrollY * speed}px)`;
+        });
+    });
     window.addEventListener('online', loadTasks);
     window.addEventListener('offline', loadFromLocal);
 });
