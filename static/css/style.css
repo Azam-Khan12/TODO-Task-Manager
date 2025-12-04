@@ -1,0 +1,90 @@
+/* Futuristic, Minimal, Luxury UI - Glassmorphism, Gradients, Neon, Animations */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    color: #fff;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+
+/* Header - Cinematic Hero */
+.header {
+    text-align: center; padding: 4rem 0; animation: fadeInUp 1s ease-out;
+}
+.logo { 
+    font-size: 4rem; 
+    font-weight: 300; 
+    background: linear-gradient(45deg, #00d4ff, #5a67d8); 
+    -webkit-background-clip: text; 
+    background-clip: text;  /* Standard property added for compatibility */
+    -webkit-text-fill-color: transparent; 
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5); 
+}
+.subtitle { font-size: 1.2rem; opacity: 0.8; margin-top: 0.5rem; animation: fadeInUp 1s ease-out 0.3s both; }
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2); transition: all 0.3s ease;
+}
+.glass-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.2); }
+
+/* Input Section */
+.input-section { display: flex; gap: 1rem; margin-bottom: 2rem; padding: 1.5rem; animation: slideInRight 0.8s ease-out; }
+.task-input { flex: 1; padding: 1rem; border: none; border-radius: 12px; background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 1rem; }
+.task-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+.add-btn {
+    padding: 1rem 2rem; border: none; border-radius: 12px; background: linear-gradient(45deg, #00d4ff, #5a67d8); color: #fff; font-weight: 600; cursor: pointer;
+    transition: all 0.3s ease; position: relative; overflow: hidden;
+}
+.add-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
+.add-btn:active { transform: scale(0.98); }
+
+/* Tasks Section */
+.tasks-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin-bottom: 1rem; animation: fadeInUp 1s ease-out 0.5s both; }
+.task-list { list-style: none; }
+.task-item {
+    display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; margin-bottom: 1rem; background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px; border-left: 4px solid transparent; transition: all 0.4s ease; opacity: 0; transform: translateY(30px);
+    animation: slideInUp 0.6s ease-out forwards; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.task-item.completed { border-left-color: #00d4ff; opacity: 0.7; text-decoration: line-through; }
+.task-item:hover { transform: translateX(10px); box-shadow: 0 8px 30px rgba(0, 212, 255, 0.2); }
+.task-text { flex: 1; font-size: 1.1rem; }
+.task-date { opacity: 0.6; font-size: 0.9rem; margin-left: 1rem; }
+.complete-btn, .delete-btn {
+    padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-left: 0.5rem;
+}
+.complete-btn { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+.complete-btn:hover { background: rgba(0, 212, 255, 0.4); box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+.delete-btn { background: rgba(255, 0, 0, 0.2); color: #ff6b6b; }
+.delete-btn:hover { background: rgba(255, 0, 0, 0.4); box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+
+/* Animations & Micro-Interactions */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Parallax & Floating Elements */
+.floating-elements { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.float-orb {
+    position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%); 
+    animation: float 6s ease-in-out infinite;
+}
+.orb1 { width: 100px; height: 100px; top: 20%; left: 10%; animation-delay: 0s; }
+.orb2 { width: 150px; height: 150px; top: 60%; right: 10%; animation-delay: 2s; }
+.orb3 { width: 80px; height: 80px; bottom: 20%; left: 20%; animation-delay: 4s; }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+
+/* Scroll Animations */
+.task-item { animation-delay: calc(0.1s * var(--order)); }
+
+/* Responsive */
+@media (max-width: 768px) { .container { padding: 1rem; } .logo { font-size: 2.5rem; } .input-section { flex-direction: column; } }
+
+/* Neon Glow Highlights */
+.add-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
+.add-btn:hover::before { left: 100%; }

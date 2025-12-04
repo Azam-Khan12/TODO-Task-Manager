@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuturoTODO - Premium Task Manager</title>
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f0f23">
+    <meta name="description" content="Futuristic TODO App for Quick Productivity">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Service Worker Register -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">FuturoTODO</h1>
+            <p class="subtitle">Elevate Your Productivity</p>
+        </header>
+        
+        <main class="main">
+            <div class="input-section glass-card">
+                <input type="text" id="taskInput" placeholder="Add a new task... (e.g., Conquer the day)" class="task-input">
+                <button id="addBtn" class="add-btn">Add Task</button>
+            </div>
+            
+            <div class="tasks-section">
+                <div class="tasks-header glass-card">
+                    <h2>Your Tasks</h2>
+                    <span id="taskCount">0</span>
+                </div>
+                <ul id="taskList" class="task-list"></ul>
+            </div>
+        </main>
+        
+        <div class="floating-elements">
+            <div class="float-orb orb1"></div>
+            <div class="float-orb orb2"></div>
+            <div class="float-orb orb3"></div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
