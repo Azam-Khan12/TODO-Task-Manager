@@ -1,13 +1,7 @@
-# Flask Backend for Ultra-Modern GUI TODO App
-# Yeh ek complete web-based GUI TODO app hai! Backend Flask (Python) mein hai, jo tasks ko JSON file mein save karta hai.
-# Frontend HTML/CSS/JS mein hai with futuristic, minimal UI – glassmorphism, gradients, neon glows, smooth animations, parallax, etc.
-# Run karne ke liye: pip install flask (agar nahi hai), phir `python app.py` run karo. Browser mein http://127.0.0.1:5000/ kholo.
-# Features: Add task, view list with animations, complete/delete with micro-interactions. Responsive & cinematic feel!
-
 from flask import Flask, render_template, request, jsonify
-import json
-import os
-from datetime import datetime
+import json, os
+from datetime import datetime, date
+from dateutil import parser  # pip install python-dateutil
 
 app = Flask(__name__)
 TASKS_FILE = 'tasks.json'
@@ -31,25 +25,41 @@ def tasks():
     tasks = load_tasks()
     if request.method == 'POST':
         data = request.json
-        if data['action'] == 'add':
-            task = data['task']
-            date = datetime.now().strftime("%Y-%m-%d")
-            tasks.append({"task": task, "date": date, "completed": False})
+        action = data['action']
+        if action == 'add':
+            task = {
+                'id': len(tasks) + 1,
+                'title': data['title'],
+                'category': data['category'],
+                'due_date': data['due_date'],
+                'time_slot': data['time_slot'],
+                'completed': False,
+                'priority': data['priority'],
+                'reminder_set': data.get('reminder_set', False)
+            }
+            tasks.append(task)
             save_tasks(tasks)
-            return jsonify({"tasks": tasks})
-        elif data['action'] == 'complete':
-            idx = data['index']
-            if 0 <= idx < len(tasks):
-                tasks[idx]["completed"] = not tasks[idx]["completed"]
-                save_tasks(tasks)
-            return jsonify({"tasks": tasks})
-        elif data['action'] == 'delete':
-            idx = data['index']
-            if 0 <= idx < len(tasks):
-                tasks.pop(idx)
-                save_tasks(tasks)
-            return jsonify({"tasks": tasks})
-    return jsonify({"tasks": tasks})
+            return jsonify({'tasks': tasks})
+        elif action == 'edit':
+            idx = next(i for i, t in enumerate(tasks) if t['id'] == data['id'])
+            tasks[idx].update(data)
+            save_tasks(tasks)
+            return jsonify({'tasks': tasks})
+        elif action == 'delete':
+            tasks = [t for t in tasks if t['id'] != data['id']]
+            save_tasks(tasks)
+            return jsonify({'tasks': tasks})
+        elif action == 'toggle':
+            idx = next(i for i, t in enumerate(tasks) if t['id'] == data['id'])
+            tasks[idx]['completed'] = not tasks[idx]['completed']
+            save_tasks(tasks)
+            return jsonify({'tasks': tasks})
+        elif action == 'reorder':
+            tasks[:] = data['tasks']
+            save_tasks(tasks)
+            return jsonify({'tasks': tasks})
+    return jsonify({'tasks': tasks})
 
 if __name__ == '__main__':
-    app.run(debug=True , host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

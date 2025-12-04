@@ -3,59 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FuturoTODO - Premium Task Manager</title>
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#0f0f23">
-    <meta name="description" content="Futuristic TODO App for Quick Productivity">
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <title>FuturoTODO - Ultimate Productivity</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Service Worker Register -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/static/sw.js');
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="logo">FuturoTODO</h1>
-            <p class="subtitle">Elevate Your Productivity</p>
-        </header>
-        
-        <!-- To Do List Section -->
-        <section class="todo-section">
-            <div class="section-header">
-                <h2>To Do List <span class="date">Today</span></h2>
-                <div class="search-icon">🔍</div>
+<body class="light-theme">
+    <!-- Hero Area with Progress Bar -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">FuturoTODO</h1>
+            <p class="hero-subtitle">Master Your Day with AI-Powered Productivity</p>
+            <div class="hero-stats">
+                <span class="stat" id="tasksToday">0 Tasks Today</span>
+                <span class="stat" id="completedCount">0 Completed</span>
             </div>
-            <div class="input-section glass-card">
-                <input type="text" id="taskInput" placeholder="Add a new task... (e.g., Dashboard project)" class="task-input">
-                <button id="addBtn" class="add-btn">+</button>
+            <div class="progress-container">
+                <div class="progress-label">Completion Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
             </div>
-            <ul id="taskList" class="task-list"></ul>
+        </div>
+        <div class="hero-bg"></div>
+    </section>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button id="menuBtn" class="menu-btn">☰</button>
+            <h2 class="nav-logo">Dashboard</h2>
+        </div>
+        <div class="nav-right">
+            <input type="text" id="searchInput" placeholder="🔍 Search tasks..." class="search-bar">
+            <button id="themeToggle" class="theme-btn">🌙</button>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>Categories</h3>
+        </div>
+        <ul class="category-list">
+            <li data-category="today" class="category-item active">Today</li>
+            <li data-category="upcoming" class="category-item">Upcoming</li>
+            <li data-category="completed" class="category-item">Completed</li>
+            <li data-category="priority" class="category-item">Priority</li>
+        </ul>
+        <div class="sidebar-footer">
+            <h3>Quick Actions</h3>
+            <button class="quick-btn">New Project</button>
+            <button class="quick-btn">Daily Review</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Calendar -->
+        <section class="calendar-section glass-card">
+            <h2>Calendar</h2>
+            <div id="calendar" class="calendar"></div>
         </section>
-        
-        <!-- Past Activity Section -->
-        <section class="past-section">
-            <div class="section-header">
-                <h2>Past Activity</h2>
+
+        <!-- Task Dashboard -->
+        <section class="dashboard">
+            <div class="task-grid">
+                <div class="task-section" data-category="today">
+                    <h3>Today <span class="badge today">New</span></h3>
+                    <ul id="todayList" class="task-list"></ul>
+                </div>
+                <div class="task-section" data-category="upcoming">
+                    <h3>Upcoming <span class="badge upcoming">Soon</span></h3>
+                    <ul id="upcomingList" class="task-list"></ul>
+                </div>
+                <div class="task-section" data-category="completed">
+                    <h3>Completed <span class="badge completed">Done</span></h3>
+                    <ul id="completedList" class="task-list"></ul>
+                </div>
+                <div class="task-section" data-category="priority">
+                    <h3>Priority <span class="badge priority">Urgent</span></h3>
+                    <ul id="priorityList" class="task-list"></ul>
+                </div>
             </div>
-            <ul id="pastList" class="past-list"></ul>
         </section>
-        
-        <!-- Bottom Nav -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active">🏠</button>
-            <button class="nav-btn">❤️</button>
-            <button class="nav-btn add-nav">+</button>
-            <button class="nav-btn">🔔</button>
-            <button class="nav-btn">👤</button>
-        </nav>
+    </main>
+
+    <!-- Floating Add Button -->
+    <button id="addTaskBtn" class="floating-btn">➕</button>
+
+    <!-- Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content glass-card">
+            <h2 id="modalTitle">Add Task</h2>
+            <input type="text" id="taskTitle" placeholder="Task title">
+            <select id="taskCategory">
+                <option value="today">Today</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="priority">Priority</option>
+            </select>
+            <input type="date" id="taskDueDate">
+            <input type="time" id="taskTimeSlot">
+            <select id="taskPriority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+            <label><input type="checkbox" id="taskReminder" checked> Set Reminder</label>
+            <div class="modal-actions">
+                <button id="saveTask">Save</button>
+                <button id="cancelTask">Cancel</button>
+            </div>
+        </div>
     </div>
-    
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
