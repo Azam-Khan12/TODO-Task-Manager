@@ -43,5 +43,35 @@
     "completed": false,
     "priority": "medium",
     "reminder_set": true
+  },
+  {
+    "id": 6,
+    "title": "Sir ke pass jana",
+    "category": "upcoming",
+    "due_date": "2025-12-05",
+    "time_slot": "00:55",
+    "completed": false,
+    "priority": "low",
+    "reminder_set": true
+  },
+  {
+    "id": 7,
+    "title": "WAKE UP",
+    "category": "today",
+    "due_date": "2025-12-05",
+    "time_slot": "12:00",
+    "completed": false,
+    "priority": "low",
+    "reminder_set": true
+  },
+  {
+    "id": 8,
+    "title": "Sir se nh milna",
+    "category": "today",
+    "due_date": "2025-12-05",
+    "time_slot": "14:00",
+    "completed": false,
+    "priority": "high",
+    "reminder_set": true
   }
 ]
